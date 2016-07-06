@@ -28,3 +28,6 @@ org.scala-ide.sdt.update-site/site.xml
 # IntelliJIdea things
 .idea
 .idea/*
+
+# Ensime
+.ensime
