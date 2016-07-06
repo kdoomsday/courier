@@ -1,7 +1,8 @@
 import scalariform.formatter.preferences._
+import com.typesafe.sbt.SbtScalariform
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 
 name := """courier"""
-
 
 lazy val commonSettings = Seq(
   version := "1.1",
@@ -24,7 +25,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream-experimental" % "2.0.2"
 )
 
-scalariformSettings
+SbtScalariform.scalariformSettings
 
 ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(AlignSingleLineCaseStatements, true)
