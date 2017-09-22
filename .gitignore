@@ -30,4 +30,4 @@ org.scala-ide.sdt.update-site/site.xml
 .idea/*
 
 # Ensime
-.ensime
+.ensime*
