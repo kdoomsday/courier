@@ -5,7 +5,8 @@ name := """courier"""
 
 lazy val commonSettings = Seq(
   version := "1.1",
-  scalaVersion := "2.12.2"
+  scalaVersion := "2.12.2",
+  libraryDependencies ++= testDependencies
 )
 
 lazy val root   = (project in file("."))
@@ -24,6 +25,9 @@ lazy val server = (project in file("server") dependsOn core).
 // libraryDependencies ++= Seq(
 //   "com.typesafe.akka" %% "akka-stream" % "2.5.4"
 // )
+lazy val testDependencies = Seq(
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+)
 
 scalariformSettings
 
