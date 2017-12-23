@@ -6,7 +6,9 @@ name := """courier"""
 lazy val commonSettings = Seq(
   version := "1.1",
   scalaVersion := "2.12.2",
-  libraryDependencies ++= testDependencies
+  libraryDependencies ++= testDependencies,
+  wartremoverErrors ++= Warts.unsafe,
+  parallelExecution in Global := false
 )
 
 lazy val root   = (project in file("."))
