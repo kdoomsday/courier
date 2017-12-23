@@ -6,6 +6,7 @@ import akka.stream.scaladsl.Sink
 import java.nio.file.Path
 import org.scalatest.AsyncFlatSpec
 import scala.concurrent.Future
+import scala.util.{ Failure, Success }
 
 
 /** Unit tests for FileSource */
@@ -32,5 +33,16 @@ class FileSourceTest extends AsyncFlatSpec {
         .filter(p => p.getFileName.toString() == "FileSourceTest.scala")
         .runWith(Sink.headOption)
     res.map(opt => assert(opt.isDefined))
+  }
+
+  it should "find all 3 files without directories" in {
+    val path = "./client/src/test/resources/testDir"
+    val fs = DefaultFileSource(path, withDirs = false)
+    fs.find()
+      .limit(100)
+      .map{ it => it.getFileName.toString() }
+      .runWith(Sink.seq).map{ elems =>
+        assert(elems.size == 3 && elems.contains("1.txt"))
+      }
   }
 }

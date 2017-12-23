@@ -4,6 +4,8 @@ object Client extends App {
   import akka.actor.ActorSystem
   import akka.stream.ActorMaterializer
   import akka.stream.scaladsl.{ Flow, RunnableGraph, Sink, Source }
+  import scala.concurrent.ExecutionContext.Implicits.global
+  import scala.util.{ Failure, Success }
 
   implicit val system = ActorSystem("Flows")
   implicit val materializer = ActorMaterializer()
@@ -17,4 +19,10 @@ object Client extends App {
 
   val res: NotUsed = flow.run
   println(s"Client says: $msg")
+
+  // Terminate the system and application
+  system.terminate().onComplete {
+    case Success(_) => println("Done...")
+    case Failure(_) => println("Error!")
+  }
 }
