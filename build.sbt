@@ -24,9 +24,6 @@ lazy val client = (project in file("client") dependsOn core).
 lazy val server = (project in file("server") dependsOn core).
                     settings(commonSettings: _*)
 
-// libraryDependencies ++= Seq(
-//   "com.typesafe.akka" %% "akka-stream" % "2.5.4"
-// )
 lazy val testDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 )
