@@ -29,7 +29,6 @@ lazy val server = (project in file("server") dependsOn core)
 
 
 lazy val testDependencies = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "com.lihaoyi"   %% "utest"     % "0.6.3" % "test"
 )
 
