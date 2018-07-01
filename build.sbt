@@ -5,10 +5,11 @@ name := """courier"""
 
 lazy val commonSettings = Seq(
   version := "1.1",
-  scalaVersion := "2.12.2",
+  scalaVersion in ThisBuild := "2.12.2",
   libraryDependencies ++= testDependencies,
   wartremoverErrors ++= Warts.unsafe,
-  parallelExecution in Global := false
+  parallelExecution in Global := false,
+  testFrameworks += new TestFramework("utest.runner.Framework")
 )
 
 lazy val root   = (project in file("."))
@@ -24,9 +25,12 @@ lazy val client = (project in file("client") dependsOn core).
 lazy val server = (project in file("server") dependsOn core).
                     settings(commonSettings: _*)
 
+
 lazy val testDependencies = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "com.lihaoyi"   %% "utest"     % "0.6.3" % "test"
 )
+
 
 scalariformSettings
 
