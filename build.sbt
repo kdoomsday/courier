@@ -33,6 +33,13 @@ lazy val testDependencies = Seq(
 )
 
 
+val http4sVersion = "0.18.13"
+lazy val http4sSettings = Seq(
+  "org.http4s" %% "http4s-dsl"          % http4sVersion,
+  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion
+)
+
 scalariformSettings
 
 ScalariformKeys.preferences := ScalariformKeys.preferences.value
@@ -63,11 +70,4 @@ lazy val commonScalacOptions = List(
   "-Ywarn-numeric-widen",              // Warn when numerics are widened.
   "-Ywarn-value-discard",              // Warn when non-Unit expression results are unused.
   "-Ypartial-unification"
-)
-
-val http4sVersion = "0.18.13"
-lazy val http4sSettings = Seq(
-  "org.http4s" %% "http4s-dsl"          % http4sVersion,
-  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
-  "org.http4s" %% "http4s-blaze-client" % http4sVersion
 )
