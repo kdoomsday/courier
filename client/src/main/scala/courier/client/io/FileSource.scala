@@ -7,8 +7,8 @@ import java.nio.file.{ Files, Path, Paths }
 
 /** Fuente de archivos para la transmisión */
 trait FileSource {
-	/** Generar un Stream con los archivos que se van a procesar */
-	def find(): Source[Path, NotUsed]
+  /** Generar un Stream con los archivos que se van a procesar */
+  def find(): Source[Path, NotUsed]
 }
 
 /** Obtiene Source[Path, NotUsed] a partir de una ruta
@@ -21,9 +21,9 @@ class DefaultFileSource(val basePath: Path, withDirs: Boolean) extends FileSourc
   def this(path: String) = this(Paths.get(path), true)
   def this(path: String, withDirs: Boolean) = this(Paths.get(path), withDirs)
 
-	def find(): Source[Path, NotUsed] =
+  def find(): Source[Path, NotUsed] =
     if (withDirs) Directory.walk(basePath)
-    else          Directory.walk(basePath).filter(p => !Files.isDirectory(p))
+    else Directory.walk(basePath).filter(p => !Files.isDirectory(p))
 }
 object DefaultFileSource {
   def apply(basePath: String) = new DefaultFileSource(basePath)

@@ -24,8 +24,8 @@ object CourierServer extends StreamApp[IO] {
   override def stream(args: List[String], requestShutdown: IO[Unit]): Stream[IO, ExitCode] = {
     BlazeBuilder[IO]
       .bindHttp(9000, "localhost")
-      .mountService( helloService )
-      .mountService( shutdownService(requestShutdown) )
+      .mountService(helloService)
+      .mountService(shutdownService(requestShutdown))
       .serve
   }
 }
