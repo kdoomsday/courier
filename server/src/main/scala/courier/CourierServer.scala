@@ -1,3 +1,5 @@
+package courier
+
 import cats.effect._
 import fs2.StreamApp.ExitCode
 import fs2.{ Stream, StreamApp }
