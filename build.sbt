@@ -10,7 +10,11 @@ lazy val commonSettings = Seq(
   wartremoverErrors ++= Warts.unsafe,
   parallelExecution in Global := false,
   testFrameworks += new TestFramework("utest.runner.Framework"),
-  scalacOptions ++= commonScalacOptions
+  scalacOptions ++= commonScalacOptions,
+
+  fork in run := true,
+
+  myScalariformSettings
 )
 
 lazy val root   = (project in file("."))
@@ -40,15 +44,6 @@ lazy val http4sSettings = Seq(
   "org.http4s" %% "http4s-blaze-client" % http4sVersion
 )
 
-scalariformSettings
-
-ScalariformKeys.preferences := ScalariformKeys.preferences.value
-  .setPreference(AlignSingleLineCaseStatements, true)
-  .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-  .setPreference(DoubleIndentClassDeclaration, true)
-  .setPreference(PreserveDanglingCloseParenthesis, true)
-
-fork in run := true
 
 lazy val commonScalacOptions = List(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
@@ -71,3 +66,15 @@ lazy val commonScalacOptions = List(
   "-Ywarn-value-discard",              // Warn when non-Unit expression results are unused.
   "-Ypartial-unification"
 )
+
+lazy val myScalariformSettings =
+  scalariformPreferences := scalariformPreferences.value
+    .setPreference(AlignSingleLineCaseStatements               , true)
+    .setPreference(DoubleIndentConstructorArguments            , true)
+    .setPreference(DanglingCloseParenthesis                    , Preserve)
+    .setPreference(AlignArguments                              , true)
+    .setPreference(AlignParameters                             , true)
+    .setPreference(FirstArgumentOnNewline                      , Preserve)
+    .setPreference(FirstParameterOnNewline                     , Preserve)
+    .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk , true)
+    .setPreference(MultilineScaladocCommentsStartOnFirstLine   , true)
