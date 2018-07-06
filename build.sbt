@@ -5,11 +5,14 @@ name := """courier"""
 
 lazy val commonSettings = Seq(
   version := "1.1",
-  scalaVersion in ThisBuild := "2.12.6",
-  libraryDependencies ++= testDependencies,
-  wartremoverErrors ++= Warts.unsafe,
-  parallelExecution in Global := false,
+  scalaVersion in ThisBuild     := "2.12.6",
+  libraryDependencies          ++= testDependencies,
+  wartremoverErrors in Compile ++= Warts.unsafe,
+  wartremoverErrors in Test    ++= Warts.unsafe,
+  parallelExecution in Global   := false,
+
   testFrameworks += new TestFramework("utest.runner.Framework"),
+
   scalacOptions ++= commonScalacOptions,
 
   fork in run := true,
@@ -21,15 +24,17 @@ lazy val root   = (project in file("."))
                     .settings(commonSettings: _*)
                     .aggregate(core, client, server)
 
-lazy val core   = (project in file("core")).
-                    settings(commonSettings: _*)
+lazy val core   = (project in file("core"))
+                    .settings(commonSettings: _*)
 
-lazy val client = (project in file("client") dependsOn core).
-                    settings(commonSettings: _*)
+lazy val client = (project in file("client") dependsOn core)
+                    .settings(commonSettings: _*)
+                    .settings(libraryDependencies ++= circeDeps)
 
 lazy val server = (project in file("server") dependsOn core)
                     .settings(commonSettings: _*)
                     .settings(libraryDependencies ++= http4sSettings)
+                    .settings(libraryDependencies ++= circeDeps)
 
 
 lazy val testDependencies = Seq(
@@ -41,8 +46,17 @@ val http4sVersion = "0.18.13"
 lazy val http4sSettings = Seq(
   "org.http4s" %% "http4s-dsl"          % http4sVersion,
   "org.http4s" %% "http4s-blaze-server" % http4sVersion,
-  "org.http4s" %% "http4s-blaze-client" % http4sVersion
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
+  "org.http4s" %% "http4s-circe"        % http4sVersion
 )
+
+val circeVersion = "0.9.3"
+
+lazy val circeDeps = Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
 
 
 lazy val commonScalacOptions = List(
