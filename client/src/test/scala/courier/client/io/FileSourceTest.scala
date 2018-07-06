@@ -8,7 +8,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import utest._
 
-
 /** Unit tests de FileSource */
 object FileSourceTest extends TestSuite {
   lazy val testPath = "./client/src/test/scala/courier/client/io"
@@ -21,7 +20,7 @@ object FileSourceTest extends TestSuite {
     "Find files" - {
       val res: Future[Int] =
         dfs.find()
-          .map(_ => 1)                  // Cada archivo pone un 1
+          .map(_ => 1) // Cada archivo pone un 1
           .runWith(Sink.fold(0)(_ + _)) // Sumar los 1 me da la cuenta
 
       res.map(count => assert(count > 0))
@@ -40,8 +39,8 @@ object FileSourceTest extends TestSuite {
       val fs = DefaultFileSource(path, withDirs = false)
       fs.find()
         .limit(100)
-        .map{ it => it.getFileName.toString() }
-        .runWith(Sink.seq).map{ elems =>
+        .map { it => it.getFileName.toString() }
+        .runWith(Sink.seq).map { elems =>
           assert(elems.size == 3 && elems.contains("1.txt"))
         }
     }

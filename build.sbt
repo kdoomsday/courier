@@ -44,14 +44,13 @@ lazy val testDependencies = Seq(
 
 val http4sVersion = "0.18.13"
 lazy val http4sSettings = Seq(
-  "org.http4s" %% "http4s-dsl"          % http4sVersion,
-  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
-  "org.http4s" %% "http4s-blaze-client" % http4sVersion,
-  "org.http4s" %% "http4s-circe"        % http4sVersion
-)
+  "org.http4s" %% "http4s-dsl",
+  "org.http4s" %% "http4s-blaze-server",
+  "org.http4s" %% "http4s-blaze-client",
+  "org.http4s" %% "http4s-circe"
+).map(_ % http4sVersion)
 
 val circeVersion = "0.9.3"
-
 lazy val circeDeps = Seq(
   "io.circe" %% "circe-core",
   "io.circe" %% "circe-generic",

@@ -5,7 +5,6 @@ import java.nio.file.{ Path, Paths }
 import scala.util.{ Failure, Success }
 import utest._
 
-
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 object FileReadTest extends TestSuite {
   val tests = Tests {
