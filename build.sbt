@@ -35,6 +35,9 @@ lazy val server = (project in file("server") dependsOn core)
                     .settings(commonSettings: _*)
                     .settings(libraryDependencies ++= http4sSettings)
                     .settings(libraryDependencies ++= circeDeps)
+                    .enablePlugins(JavaAppPackaging)
+
+
 
 
 lazy val testDependencies = Seq(
