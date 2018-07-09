@@ -29,6 +29,7 @@ lazy val core   = (project in file("core"))
 
 lazy val client = (project in file("client") dependsOn core)
                     .settings(commonSettings: _*)
+                    .settings(libraryDependencies ++= http4sSettings)
                     .settings(libraryDependencies ++= circeDeps)
 
 lazy val server = (project in file("server") dependsOn core)

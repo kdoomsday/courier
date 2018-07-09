@@ -11,30 +11,31 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import io.circe._, io.circe.generic.auto._, io.circe.syntax._, io.circe.parser._
 import org.http4s.circe._
 import courier.auth.DummyAutenticador
+import middleware.LoggingService
 
 object CourierServer extends StreamApp[IO] {
   val autenticador = DummyAutenticador
 
-  val helloService = HttpService[IO] {
+  val helloService: HttpService[IO] = LoggingService[IO] {
     case GET -> Root / "hello" / name =>
       Ok(s"Hello, $name!")
   }
 
-  def shutdownService(requestShutdown: IO[Unit]) = HttpService[IO] {
+  def shutdownService(requestShutdown: IO[Unit]) = LoggingService.wrap(HttpService[IO] {
     case GET -> Root / "shutdown" =>
       requestShutdown.unsafeRunSync()
       Ok()
-  }
+  })
 
   /** Servicio para recibir las credenciales y contestar con el token de
     * autenticación
     */
-  val authService = HttpService[IO] {
+  val authService = LoggingService[IO] {
     case req @ POST -> Root / "authenticate" =>
       req.decode[UrlForm] { data: UrlForm =>
         data.values.get("auth") match {
           case Some(authinfo) =>
-            val creds = parseCredenciales(authinfo.headOption.getOrElse(""))
+            val creds: Either[Error, Credenciales] = parseCredenciales(authinfo.headOption.getOrElse(""))
             mkCredsResponse(creds)
 
           case None =>
