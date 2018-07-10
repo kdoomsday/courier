@@ -1,5 +1,6 @@
 *.class
 *.log
+Notes.org
 
 # sbt specific
 .cache
