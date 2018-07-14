@@ -1,7 +1,7 @@
 package courier
 
 import cats.effect._
-import courier.auth.Credenciales
+import courier.auth.{ AuthInfo, AuthStore, Credenciales, InMemoryAuthStore }
 import fs2.StreamApp.ExitCode
 import fs2.{ Stream, StreamApp }
 import org.http4s._
@@ -13,8 +13,9 @@ import org.http4s.circe._
 import courier.auth.DummyAutenticador
 import middleware.LoggingService
 
-object CourierServer extends StreamApp[IO] {
+class CourierServer extends StreamApp[IO] {
   val autenticador = DummyAutenticador
+  val store = InMemoryAuthStore()
 
   val helloService: HttpService[IO] = LoggingService[IO] {
     case GET -> Root / "hello" / name =>
@@ -33,34 +34,37 @@ object CourierServer extends StreamApp[IO] {
   val authService = LoggingService[IO] {
     case req @ POST -> Root / "authenticate" =>
       req.decode[UrlForm] { data: UrlForm =>
-        data.values.get("auth") match {
-          case Some(authinfo) =>
-            val creds: Either[Error, Credenciales] = parseCredenciales(authinfo.headOption.getOrElse(""))
-            mkCredsResponse(creds)
+        val as: Either[String, String] =
+          data
+            .values
+            .get("auth")
+            .getOrElse(Nil)
+            .headOption
+            .toRight("No credentials")
 
-          case None =>
-            NotFound()
-        }
+        // format: OFF
+        val resp = for {
+          authString <- as
+          creds      <- parseCredenciales(authString)
+          authInfo   <- autenticador.autenticar(creds)
+          _           = storeInfo(creds, authInfo)
+          tokenJson   = authInfo.token.asJson
+          resp        = Ok(tokenJson)
+        } yield resp
+        // format: ON
+
+        resp.getOrElse(NotFound())
       }
-  }
-
-  val simpleAuthService = HttpService[IO] {
-    case GET -> Root / "authenticate" / id =>
-      mkCredsResponse(Right[Error, Credenciales](Credenciales(id)))
   }
 
   /** Convertir de json a Credenciales */
   private[this] def parseCredenciales(jsonString: String): Either[Error, Credenciales] =
     decode[Credenciales](jsonString)
 
-  /** Dadas las credenciales, construir la respuesta */
-  private[this] def mkCredsResponse(eCreds: Either[Error, Credenciales]): IO[Response[IO]] = {
-    eCreds match {
-      case Left(_) => NotFound()
-      case Right(creds) =>
-        autenticador.autenticar(creds)
-          .fold(_ => NotFound(), token => Ok(token.asJson))
-    }
+  /** Almacenar la información de autenticación en el store */
+  private[this] def storeInfo(c: Credenciales, ai: AuthInfo): Unit = {
+    val _: InMemoryAuthStore = store.store(c, ai.token)
+    ()
   }
 
   override def stream(args: List[String], requestShutdown: IO[Unit]): Stream[IO, ExitCode] = {
@@ -69,7 +73,6 @@ object CourierServer extends StreamApp[IO] {
       .mountService(helloService)
       .mountService(shutdownService(requestShutdown))
       .mountService(authService)
-      .mountService(simpleAuthService)
       .serve
   }
 }

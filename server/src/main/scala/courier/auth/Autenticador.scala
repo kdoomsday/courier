@@ -8,5 +8,5 @@ trait Autenticador {
     * @return El error de autenticación si falló. Si fue exitosa el token de
     * autenticación correspondiente.
     */
-  def autenticar(creds: Credenciales): Either[AuthError, AuthToken]
+  def autenticar(creds: Credenciales): Either[AuthError, AuthInfo]
 }
