@@ -6,16 +6,19 @@ package courier.auth
 trait AuthStore[A <: AuthStore[A]] {
 
   /** Almacenar el token de autenticación generado para unas credenciales
-    * @param creds Las credenciales
+    * @param id    El id del cliente
     * @param token El token
     * @return Un AuthStore que contiene los datos almacenados
     */
-  def store(creds: Credenciales, token: AuthToken): A
+  def store(id: ClientId, token: AuthToken): A
 
-  /** Validar un par de credenciales con token
-    * @param creds Las credenciales
+  /** Validar que un cliente tiene el token correcto
+    * @param id    El identificador del cliente
     * @param token El token
-    * @return Si el par Credenciales + Token existe en este store
+    * @return Si el par ClientId + Token existe en este store
     */
-  def validate(creds: Credenciales, token: AuthToken): Boolean
+  def validate(id: ClientId, token: AuthToken): Boolean
+
+  /** Validar a partir de las credenciales */
+  final def validate(c: Credenciales): Boolean = validate(c.id, c.token)
 }
