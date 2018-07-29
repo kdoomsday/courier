@@ -3,16 +3,16 @@ package courier.auth
 import scala.collection.mutable.{ Map => MMap }
 
 /** Implementación en memoria de un AuthStore */
-class InMemoryAuthStore private (store: MMap[Credenciales, AuthToken])
+class InMemoryAuthStore private (store: MMap[ClientId, AuthToken])
   extends AuthStore[InMemoryAuthStore] {
 
-  override def store(creds: Credenciales, token: AuthToken): InMemoryAuthStore = {
-    store.update(creds, token)
+  override def store(id: ClientId, token: AuthToken): InMemoryAuthStore = {
+    store.update(id, token)
     this
   }
 
-  override def validate(creds: Credenciales, token: AuthToken): Boolean =
-    store.contains(creds) && store(creds) == token
+  override def validate(id: ClientId, token: AuthToken): Boolean =
+    store.contains(id) && store(id) == token
 }
 
 object InMemoryAuthStore {

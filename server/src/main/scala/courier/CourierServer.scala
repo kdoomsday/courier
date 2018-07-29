@@ -1,7 +1,7 @@
 package courier
 
 import cats.effect._
-import courier.auth.{ AuthInfo, AuthStore, Credenciales, InMemoryAuthStore }
+import courier.auth.{ AuthInfo, ClientId, Credenciales, InMemoryAuthStore }
 import fs2.StreamApp.ExitCode
 import fs2.{ Stream, StreamApp }
 import org.http4s._
@@ -58,12 +58,12 @@ class CourierServer extends StreamApp[IO] {
   }
 
   /** Convertir de json a Credenciales */
-  private[this] def parseCredenciales(jsonString: String): Either[Error, Credenciales] =
-    decode[Credenciales](jsonString)
+  private[this] def parseCredenciales(jsonString: String): Either[Error, ClientId] =
+    decode[ClientId](jsonString)
 
   /** Almacenar la información de autenticación en el store */
-  private[this] def storeInfo(c: Credenciales, ai: AuthInfo): Unit = {
-    val _: InMemoryAuthStore = store.store(c, ai.token)
+  private[this] def storeInfo(id: ClientId, ai: AuthInfo): Unit = {
+    val _: InMemoryAuthStore = store.store(id, ai.token)
     ()
   }
 

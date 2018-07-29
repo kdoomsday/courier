@@ -7,17 +7,17 @@ object InMemoryAuthStoreTest extends TestSuite {
     'put - {
       'validatesAfterPut - {
         val store = InMemoryAuthStore()
-        val creds = Credenciales("foo")
+        val id = ClientId("foo")
         val token = AuthToken("bar")
-        assert(store.store(creds, token).validate(creds, token))
+        assert(store.store(id, token).validate(id, token))
       }
 
       'notValidateWrongToken - {
         val store = InMemoryAuthStore()
-        val creds = Credenciales("foo")
+        val id = ClientId("foo")
         val tokenA = AuthToken("bar")
         val tokenB = AuthToken("other")
-        assert(!store.store(creds, tokenA).validate(creds, tokenB))
+        assert(!store.store(id, tokenA).validate(id, tokenB))
       }
     }
   }

@@ -1,7 +1,7 @@
 package courier
 
 import cats.effect.IO
-import courier.auth.AuthToken
+import courier.auth.{ AuthToken, ClientId }
 import io.circe._, io.circe.generic.auto._, io.circe.syntax._
 import courier.auth.Credenciales
 import org.http4s.UrlForm
@@ -65,6 +65,6 @@ object TestCourierServer extends TestSuite {
   private[this] def testRequest(): Request[IO] =
     Request[IO](Method.POST,
                 uri("/authenticate"))
-      .withBody(UrlForm("auth" -> Credenciales("eduardo").asJson.toString()))
+      .withBody(UrlForm("auth" -> ClientId("eduardo").asJson.toString()))
       .unsafeRunSync()
 }
