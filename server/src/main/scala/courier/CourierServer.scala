@@ -1,7 +1,7 @@
 package courier
 
 import cats.effect._
-import courier.auth.{ AuthInfo, AuthStore, ClientId, Credenciales, InMemoryAuthStore }
+import courier.auth.{ AuthInfo, ClientId, Credenciales, InMemoryAuthStore }
 import fs2.StreamApp.ExitCode
 import fs2.{ Stream, StreamApp }
 import org.http4s._
