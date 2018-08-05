@@ -1,7 +1,7 @@
 package courier
 
 import cats.effect._
-import courier.auth.{ AuthInfo, ClientId, Credenciales, InMemoryAuthStore }
+import courier.auth._
 import fs2.StreamApp.ExitCode
 import fs2.{ Stream, StreamApp }
 import org.http4s._
@@ -13,9 +13,11 @@ import org.http4s.circe._
 import courier.auth.DummyAutenticador
 import middleware.LoggingService
 
-class CourierServer extends StreamApp[IO] {
+object CourierServer extends StreamApp[IO] {
   val autenticador = DummyAutenticador
   val store = InMemoryAuthStore()
+
+  // Servicios
 
   val helloService: HttpService[IO] = LoggingService[IO] {
     case GET -> Root / "hello" / name =>
@@ -49,8 +51,7 @@ class CourierServer extends StreamApp[IO] {
           authInfo   <- autenticador.autenticar(creds)
           _           = storeInfo(creds, authInfo)
           tokenJson   = authInfo.token.asJson
-          resp        = Ok(tokenJson)
-        } yield resp
+        } yield Ok(tokenJson)
         // format: ON
 
         resp.getOrElse(NotFound())
