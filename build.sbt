@@ -5,11 +5,10 @@ name := """courier"""
 
 lazy val commonSettings = Seq(
   version := "1.1",
-  scalaVersion in ThisBuild     := "2.12.6",
-  libraryDependencies          ++= testDependencies,
-  wartremoverErrors in Compile ++= Warts.unsafe,
-  wartremoverErrors in Test    ++= Warts.unsafe,
-  parallelExecution in Global   := false,
+  scalaVersion in ThisBuild                := "2.12.6",
+  libraryDependencies                     ++= testDependencies,
+  wartremoverErrors in (Compile, compile) ++= Warts.unsafe,
+  parallelExecution in Global              := false,
 
   testFrameworks += new TestFramework("utest.runner.Framework"),
 
