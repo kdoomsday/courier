@@ -2,6 +2,7 @@ package courier
 
 import cats.effect._
 import courier.auth._
+import courier.middleware.AuthService
 import fs2.StreamApp.ExitCode
 import fs2.{ Stream, StreamApp }
 import org.http4s._
@@ -15,7 +16,7 @@ import middleware.LoggingService
 
 object CourierServer extends StreamApp[IO] {
   val autenticador = DummyAutenticador
-  val store = InMemoryAuthStore()
+  implicit val store = InMemoryAuthStore()
 
   // Servicios
 
@@ -56,6 +57,11 @@ object CourierServer extends StreamApp[IO] {
 
         resp.getOrElse(NotFound())
       }
+  }
+
+  val heartbeatService = AuthService {
+    case GET -> Root / "heartbeat" =>
+      Ok(s"${System.nanoTime()}")
   }
 
   /** Convertir de json a Credenciales */
