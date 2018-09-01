@@ -60,6 +60,39 @@ lazy val circeDeps = Seq(
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
 
+// Tasks
+def serverPackage(base: File): PathFinder = (base / "target" / "universal") * "*.zip"
+val dest = file("deploy/")
+
+// Tarea que compila y genera el paquete del servidor
+lazy val compileServer = taskKey[Unit]("Compile the server")
+compileServer := (dist in server).value
+
+lazy val deployServer = taskKey[Unit]("Deploy the server")
+deployServer := {
+  import java.nio.file._
+  val dest: Path = (baseDirectory.value / "deploy").toPath
+
+  println(s"Clean $dest")
+  DeployServer.delDirContents(dest)
+
+  println("Compile server")
+  compileServer.value
+
+  println("Copy zips")
+  // DeployServer.copyZips((server.base / "target" / "universal").toPath, dest)
+  // serverPackage(server.base).get map (f => unzip(DeployServer.copy(f.toPath, dest)))
+  for {
+    f   <- serverPackage(server.base).get
+    zip =  DeployServer.copy(f.toPath, dest)
+    unzip(zip)
+  } yield ()
+
+  println("done")
+}
+
+
+
 
 lazy val commonScalacOptions = List(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
