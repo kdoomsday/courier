@@ -11,7 +11,11 @@ target/
 lib_managed/
 src_managed/
 project/boot/
+project/project/
 project/plugins/project/
+
+# En deploy/ se despliega el servidor, pero no es parte del proyecto
+deploy/*
 
 # Scala-IDE specific
 .scala_dependencies
