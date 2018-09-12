@@ -1,9 +1,10 @@
 object DeployServer {
   import scala.util.{ Try, Success, Failure }
-  import java.io.{ File, IOException }
+  import java.io.{ File, IOException, FileInputStream, FileOutputStream }
   import java.nio.file.{ Files, Path, Paths }
   import java.util.stream.Stream
   import scala.collection.JavaConverters._
+  import java.util.zip.{ ZipInputStream, ZipEntry }
 
   /** Delete all the contents of a dir. Return whether it was successful */
   def delDirContents(dir: Path): Boolean = {
@@ -40,37 +41,49 @@ object DeployServer {
   /** Copy a file
     * @return the Path of the resulting file
     */
-  def copy(what: Path, where: Path): Path =
-    Try { Files.copy(what, where.resolve(what.getFileName.toString)) } match {
-      case Failure(e) => println(s"Error copiando: ${e.getMessage}")
-      case _          => ()
-    }
-
+  def copy(what: Path, where: Path): Try[Path] =
+    Try { Files.copy(what, where.resolve(what.getFileName.toString)) }
 
   /** Unzip a file where it stands */
-  def unzip(item: Path): Unit = {
+  def unzip(item: Path): Try[Unit] = Try {
     val zis = new ZipInputStream(new FileInputStream(item.toFile))
 
-    val buffer = Array[Byte](1024)
+    val buffer = new Array[Byte](1024)
 
     var ze: ZipEntry = zis.getNextEntry()
     while (ze != null) {
       val filename = ze.getName()
-      val newFile = Paths.get(item, filename).toFile
-      val fos = new FileOutputStream(newFile)
+      val newFile = Paths.get(item.getParent.toString, filename)
 
-      var len = zis.read(buffer)
-      while (len > 0) {
-        fos.write(buffer, 0, len)
-        len = zis.read(buffer)
+      if ( ! ze.isDirectory ) {
+        Files.createDirectories(newFile.getParent)
+        val fos = new FileOutputStream(newFile.toFile)
+
+        var len = zis.read(buffer)
+        while (len > 0) {
+          fos.write(buffer, 0, len)
+          len = zis.read(buffer)
+        }
+
+        fos.close()
+      }
+      else {
+        Files.createDirectories(newFile)
       }
 
-      fos.close()
       ze = zis.getNextEntry()
     }
 
     zis.closeEntry()
     zis.close()
+  }
+
+  def deploy(zipPath: Path, deployPath: Path): Try[Unit] = {
+    Files.createDirectories(deployPath)
+    for {
+      newZipPath <- copy(zipPath, deployPath)
+      _ <- unzip(newZipPath)
+    } yield ()
   }
 
 

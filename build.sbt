@@ -38,8 +38,6 @@ lazy val server = (project in file("server") dependsOn core)
                     .enablePlugins(JavaAppPackaging)
 
 
-
-
 lazy val testDependencies = Seq(
   "com.lihaoyi"   %% "utest"     % "0.6.3" % "test"
 )
@@ -71,7 +69,11 @@ compileServer := (dist in server).value
 lazy val deployServer = taskKey[Unit]("Deploy the server")
 deployServer := {
   import java.nio.file._
+  import scala.util._
+
+  val source: Path = serverPackage(server.base).get.head.toPath
   val dest: Path = (baseDirectory.value / "deploy").toPath
+  Files.createDirectories(dest)
 
   println(s"Clean $dest")
   DeployServer.delDirContents(dest)
@@ -79,19 +81,17 @@ deployServer := {
   println("Compile server")
   compileServer.value
 
-  println("Copy zips")
-  // DeployServer.copyZips((server.base / "target" / "universal").toPath, dest)
-  // serverPackage(server.base).get map (f => unzip(DeployServer.copy(f.toPath, dest)))
-  for {
-    f   <- serverPackage(server.base).get
-    zip =  DeployServer.copy(f.toPath, dest)
-    unzip(zip)
-  } yield ()
+  println("Unzip")
+  val res: Try[Unit] = DeployServer.deploy(source, dest)
+  res match {
+    case Success(_) => println(s"Servidor listo en $dest")
+    case Failure(e) => println(e.getMessage)
+  }
 
   println("done")
 }
 
-
+// --- Fin de desplegar el servidor
 
 
 lazy val commonScalacOptions = List(
